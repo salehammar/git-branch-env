@@ -33,16 +33,26 @@ function setupCIEnv(ciType) {
 function testCIIntegration() {
   console.log('🏭 Testing CI integration...');
   
-  const lib = require('../index');
+  // Mock execSync to fail for git command so CI env vars are used
+  const originalExecSync = require('child_process').execSync;
+  require('child_process').execSync = () => { throw new Error('git command failed'); };
   
   const ciTypes = ['github', 'gitlab', 'circle', 'travis', 'bitbucket', 'custom'];
   
   for (const ciType of ciTypes) {
     setupCIEnv(ciType);
+    
+    // Clear require cache to reload the module with new env
+    delete require.cache[require.resolve('../index')];
+    const lib = require('../index');
+    
     const branch = lib.getCurrentBranch();
     assert.strictEqual(branch, 'feature/test', `Should detect branch in ${ciType} CI`);
     console.log(`✅ ${ciType} CI integration passed`);
   }
+  
+  // Restore execSync
+  require('child_process').execSync = originalExecSync;
 }
 
 function testFallbackDetection() {
@@ -52,6 +62,12 @@ function testFallbackDetection() {
   process.env = { ...originalEnv };
   process.env.CUSTOM_BRANCH = 'fallback-branch';
   
+  // Mock execSync to fail for git command
+  const originalExecSync = require('child_process').execSync;
+  require('child_process').execSync = () => { throw new Error('git command failed'); };
+  
+  // Clear require cache to reload the module with new env
+  delete require.cache[require.resolve('../index')];
   const lib = require('../index');
   const branch = lib.getCurrentBranch();
   assert.strictEqual(branch, 'fallback-branch', 'Should use env var fallback');
@@ -60,11 +76,17 @@ function testFallbackDetection() {
   process.env = { ...originalEnv };
   fs.writeFileSync('./branch.txt', 'file-branch');
   
-  const branch2 = lib.getCurrentBranch();
+  // Clear require cache again
+  delete require.cache[require.resolve('../index')];
+  const lib2 = require('../index');
+  const branch2 = lib2.getCurrentBranch();
   assert.strictEqual(branch2, 'file-branch', 'Should use file fallback');
   
   // Cleanup
   fs.unlinkSync('./branch.txt');
+  
+  // Restore execSync
+  require('child_process').execSync = originalExecSync;
   
   console.log('✅ Fallback detection passed');
 }
