@@ -8,7 +8,7 @@
   },
   "scripts": {
     "test": "node test/test.js",
-    "test:ci": "node test/test-ci.js",
+    "test:ci": "node test/test-ci-simple.js",
     "test:encryption": "node test/test-encryption.js",
     "test:all": "npm test && npm run test:ci && npm run test:encryption",
     "lint": "eslint .",
