@@ -1,0 +1,76 @@
+{
+  "name": "git-branch-env",
+  "version": "1.4.0",
+  "description": "🚀 Automatically load environment variables based on git branch with CI/CD support, encryption, and developer tools",
+  "main": "index.js",
+  "bin": {
+    "git-branch-env": "./cli.js"
+  },
+  "scripts": {
+    "test": "node test/test.js",
+    "test:ci": "node test/test-ci.js",
+    "test:encryption": "node test/test-encryption.js",
+    "test:all": "npm test && npm run test:ci && npm run test:encryption",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "prepublishOnly": "npm run test:all && npm run lint",
+    "prepare": "npm run lint"
+  },
+  "keywords": [
+    "git",
+    "branch",
+    "environment",
+    "env",
+    "variables",
+    "ci",
+    "cd",
+    "deployment",
+    "configuration",
+    "dotenv",
+    "encryption",
+    "development",
+    "workflow",
+    "automation",
+    "devops",
+    "environment-management",
+    "branch-specific",
+    "git-hooks",
+    "vscode",
+    "typescript",
+    "javascript"
+  ],
+  "author": {
+    "name": "saleh ammar",
+    "email": "hi@salehammar.com",
+    "url": "https://github.com/salehammar"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/salehammar/git-branch-env.git"
+  },
+  "bugs": {
+    "url": "https://github.com/salehammar/git-branch-env/issues"
+  },
+  "homepage": "https://github.com/salehammar/git-branch-env#readme",
+  "engines": {
+    "node": ">=12.0.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.0.0"
+  },
+  "files": [
+    "index.js",
+    "cli.js",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md"
+  ],
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/salehammar"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

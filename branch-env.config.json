@@ -1,0 +1,22 @@
+{
+  "mappings": {
+    "feature/*": ".env.dev",
+    "hotfix/*": ".env.staging",
+    "release/*": ".env.staging"
+  },
+  "requiredKeys": ["DATABASE_URL", "API_KEY"],
+  "baseEnv": ".env.base",
+  "warnOnTemplate": true,
+  "branchSanitizer": {
+    "replaceSpecialChars": true,
+    "maxLength": 30
+  },
+  "branchFallbacks": [
+    {
+      "envVar": "CUSTOM_BRANCH"
+    },
+    {
+      "file": "./branch.txt"
+    }
+  ]
+}
