@@ -40,6 +40,8 @@ function testCIIntegration() {
   const ciTypes = ['github', 'gitlab', 'circle', 'travis', 'bitbucket', 'custom'];
   
   for (const ciType of ciTypes) {
+    // Reset environment completely
+    process.env = { ...originalEnv };
     setupCIEnv(ciType);
     
     // Clear require cache to reload the module with new env
