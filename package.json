@@ -4,7 +4,7 @@
   "description": "🚀 Automatically load environment variables based on git branch with CI/CD support, encryption, and developer tools",
   "main": "index.js",
   "bin": {
-    "git-branch-env": "./cli.js"
+    "git-branch-env": "cli.js"
   },
   "scripts": {
     "test": "node test/test.js",
@@ -47,7 +47,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/salehammar/git-branch-env.git"
+    "url": "git+https://github.com/salehammar/git-branch-env.git"
   },
   "bugs": {
     "url": "https://github.com/salehammar/git-branch-env/issues"
