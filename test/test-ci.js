@@ -54,6 +54,9 @@ function testCIIntegration() {
     // Force reload the module
     const lib = require('../index');
     
+    // Reset internal caches
+    lib.resetCaches();
+    
     const branch = lib.getCurrentBranch();
     assert.strictEqual(branch, 'feature/test', `Should detect branch in ${ciType} CI`);
     console.log(`✅ ${ciType} CI integration passed`);
@@ -77,6 +80,7 @@ function testFallbackDetection() {
   // Clear require cache to reload the module with new env
   delete require.cache[require.resolve('../index')];
   const lib = require('../index');
+  lib.resetCaches();
   const branch = lib.getCurrentBranch();
   assert.strictEqual(branch, 'fallback-branch', 'Should use env var fallback');
   
@@ -87,6 +91,7 @@ function testFallbackDetection() {
   // Clear require cache again
   delete require.cache[require.resolve('../index')];
   const lib2 = require('../index');
+  lib2.resetCaches();
   const branch2 = lib2.getCurrentBranch();
   assert.strictEqual(branch2, 'file-branch', 'Should use file fallback');
   

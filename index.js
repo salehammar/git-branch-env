@@ -8,6 +8,14 @@ let cachedBranchMtime = 0;
 let cachedConfig = null;
 let cachedConfigMtime = 0;
 
+// Function to reset internal caches for testing
+function resetCaches() {
+  cachedBranch = null;
+  cachedBranchMtime = 0;
+  cachedConfig = null;
+  cachedConfigMtime = 0;
+}
+
 function getCurrentBranch(options = {}) {
   if (process.env.GIT_BRANCH) return process.env.GIT_BRANCH;
   const headPath = path.join(process.cwd(), '.git/HEAD');
@@ -198,5 +206,6 @@ module.exports = {
   sanitizeBranch,
   parseEnv,
   expandEnv,
-  decryptEnv
+  decryptEnv,
+  resetCaches
 };
