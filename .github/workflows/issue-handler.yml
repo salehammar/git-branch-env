@@ -1,0 +1,130 @@
+name: Issue and PR Handler
+
+on:
+  issues:
+    types: [opened, edited, labeled, unlabeled]
+  pull_request:
+    types: [opened, edited, labeled, unlabeled, synchronize]
+
+jobs:
+  issue-handler:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'issues'
+    steps:
+      - name: Label issues
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issue = context.payload.issue;
+            const labels = issue.labels.map(label => label.name);
+            
+            // Auto-label based on title and body
+            const title = issue.title.toLowerCase();
+            const body = issue.body?.toLowerCase() || '';
+            
+            let newLabels = [];
+            
+            // Bug detection
+            if (title.includes('bug') || title.includes('error') || title.includes('fail') || 
+                body.includes('error') || body.includes('exception') || body.includes('crash')) {
+              newLabels.push('bug');
+            }
+            
+            // Feature request detection
+            if (title.includes('feature') || title.includes('enhancement') || title.includes('request') ||
+                body.includes('feature request') || body.includes('enhancement')) {
+              newLabels.push('enhancement');
+            }
+            
+            // Documentation detection
+            if (title.includes('doc') || title.includes('readme') || title.includes('documentation') ||
+                body.includes('documentation') || body.includes('readme')) {
+              newLabels.push('documentation');
+            }
+            
+            // Security detection
+            if (title.includes('security') || title.includes('vulnerability') || title.includes('encryption') ||
+                body.includes('security') || body.includes('vulnerability')) {
+              newLabels.push('security');
+            }
+            
+            // Add labels if not already present
+            for (const label of newLabels) {
+              if (!labels.includes(label)) {
+                await github.rest.issues.addLabels({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: issue.number,
+                  labels: [label]
+                });
+              }
+            }
+            
+                         // Add welcome message for new issues
+             if (context.payload.action === 'opened') {
+               await github.rest.issues.createComment({
+                 owner: context.repo.owner,
+                 repo: context.repo.repo,
+                 issue_number: issue.number,
+                 body: '👋 Thanks for opening an issue!\n\n**Before we can help you, please:**\n\n1. **Check the documentation**: [README.md](https://github.com/salehammar/git-branch-env#readme)\n2. **Search existing issues**: Make sure this hasn\'t been reported before\n3. **Provide details**: Include your Node.js version, OS, and steps to reproduce\n\n**For bugs, please include:**\n- Error messages\n- Expected vs actual behavior\n- Steps to reproduce\n- Environment details\n\n**For feature requests, please include:**\n- Use case description\n- Expected functionality\n- Any alternatives you\'ve considered\n\nWe\'ll get back to you as soon as possible! 🚀'
+               });
+             }
+
+  pr-handler:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Label PRs
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const labels = pr.labels.map(label => label.name);
+            
+            // Auto-label based on title and body
+            const title = pr.title.toLowerCase();
+            const body = pr.body?.toLowerCase() || '';
+            
+            let newLabels = [];
+            
+            // Bug fix detection
+            if (title.includes('fix') || title.includes('bug') || title.includes('issue')) {
+              newLabels.push('bug');
+            }
+            
+            // Feature detection
+            if (title.includes('feature') || title.includes('add') || title.includes('implement')) {
+              newLabels.push('enhancement');
+            }
+            
+            // Documentation detection
+            if (title.includes('doc') || title.includes('readme') || title.includes('documentation')) {
+              newLabels.push('documentation');
+            }
+            
+            // Breaking change detection
+            if (title.includes('breaking') || title.includes('major') || body.includes('breaking change')) {
+              newLabels.push('breaking-change');
+            }
+            
+            // Add labels if not already present
+            for (const label of newLabels) {
+              if (!labels.includes(label)) {
+                await github.rest.issues.addLabels({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: pr.number,
+                  labels: [label]
+                });
+              }
+            }
+            
+                         // Add welcome message for new PRs
+             if (context.payload.action === 'opened') {
+               await github.rest.issues.createComment({
+                 owner: context.repo.owner,
+                 repo: context.repo.repo,
+                 issue_number: pr.number,
+                 body: '🎉 Thanks for your pull request!\n\n**Before we can merge your PR, please ensure:**\n\n1. **Tests pass**: All tests should be green ✅\n2. **Code quality**: Linting should pass ✅\n3. **Documentation**: Update docs if needed 📚\n4. **Description**: Clear description of changes 📝\n\n**For new features:**\n- Include tests for new functionality\n- Update documentation\n- Consider backward compatibility\n\n**For bug fixes:**\n- Include tests that reproduce the issue\n- Verify the fix works as expected\n\nWe\'ll review your PR as soon as possible! 🚀'
+               });
+             }
