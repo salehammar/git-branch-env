@@ -40,12 +40,18 @@ function testCIIntegration() {
   const ciTypes = ['github', 'gitlab', 'circle', 'travis', 'bitbucket', 'custom'];
   
   for (const ciType of ciTypes) {
-    // Reset environment completely
+    // Reset environment completely and clear all caches
     process.env = { ...originalEnv };
     setupCIEnv(ciType);
     
-    // Clear require cache to reload the module with new env
-    delete require.cache[require.resolve('../index')];
+    // Clear all require caches to ensure fresh module loading
+    Object.keys(require.cache).forEach(key => {
+      if (key.includes('index.js') || key.includes('git-branch-env')) {
+        delete require.cache[key];
+      }
+    });
+    
+    // Force reload the module
     const lib = require('../index');
     
     const branch = lib.getCurrentBranch();
